@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simultaneous Interpreting Activities - B1 Level</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .activity-selector {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .activity-btn {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .activity-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        .activity-btn.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .activity-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: none;
+        }
+        
+        .activity-container.active {
+            display: block;
+        }
+        
+        .activity-title {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .activity-subtitle {
+            font-size: 1.2em;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .instructions h3 {
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .scenario-list {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .scenario-card {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .scenario-card:hover {
+            background: #eeeeee;
+            transform: translateX(5px);
+        }
+        
+        .scenario-card.selected {
+            background: #c5cae9;
+            border-left-color: #4CAF50;
+        }
+        
+        .scenario-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .scenario-description {
+            color: #666;
+            font-size: 0.95em;
+        }
+        
+        .control-panel {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-btn:hover:not(:disabled) {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        .control-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .control-btn.stop {
+            background: #f44336;
+        }
+        
+        .control-btn.stop:hover:not(:disabled) {
+            background: #d32f2f;
+        }
+        
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .speed-control label {
+            font-weight: bold;
+        }
+        
+        .speed-control select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 2px solid #667eea;
+            font-size: 1em;
+        }
+        
+        .display-area {
+            background: #fafafa;
+            padding: 30px;
+            border-radius: 10px;
+            min-height: 300px;
+            margin-bottom: 30px;
+            border: 3px solid #667eea;
+        }
+        
+        .sentence-display {
+            font-size: 1.5em;
+            color: #333;
+            line-height: 1.8;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .sentence-display.highlight {
+            background: #fff9c4;
+            border-radius: 8px;
+            animation: highlight 0.5s;
+        }
+        
+        @keyframes highlight {
+            0% { background: #fff9c4; }
+            100% { background: transparent; }
+        }
+        
+        .timer {
+            text-align: center;
+            font-size: 1.5em;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .status.recording {
+            color: #f44336;
+            font-weight: bold;
+        }
+        
+        .tips {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 5px solid #ff9800;
+        }
+        
+        .tips h3 {
+            color: #f57c00;
+            margin-bottom: 10px;
+        }
+        
+        .tips ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .dialogue-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .dialogue-turn {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.2em;
+        }
+        
+        .dialogue-turn.person-a {
+            background: #e3f2fd;
+            border-left: 5px solid #2196F3;
+            align-self: flex-start;
+            max-width: 80%;
+        }
+        
+        .dialogue-turn.person-b {
+            background: #f3e5f5;
+            border-right: 5px solid #9c27b0;
+            align-self: flex-end;
+            max-width: 80%;
+            text-align: right;
+        }
+        
+        .speaker-label {
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+        
+        .pause-indicator {
+            text-align: center;
+            color: #ff9800;
+            font-style: italic;
+            padding: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .activity-title {
+                font-size: 1.5em;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+            }
+            
+            .sentence-display {
+                font-size: 1.2em;
+            }
+            
+            .dialogue-turn {
+                max-width: 95% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎤 Simultaneous Interpreting Practice</h1>
+            <p>B1 Level - Develop Your Real-Time Translation Skills</p>
+        </div>
+
+        <div class="activity-selector">
+            <button class="activity-btn active" onclick="showActivity(1)">
+                Activity 1: Sentence-by-Sentence
+            </button>
+            <button class="activity-btn" onclick="showActivity(2)">
+                Activity 2: Dialogue Interpreting
+            </button>
+        </div>
+
+        <!-- Activity 1: Sentence-by-Sentence Interpreting -->
+        <div id="activity1" class="activity-container active">
+            <h2 class="activity-title">Activity 1: Sentence-by-Sentence Interpreting</h2>
+            <p class="activity-subtitle">Practice interpreting individual sentences with controlled pauses</p>
+
+            <div class="instructions">
+                <h3>📋 How to Practice:</h3>
+                <ol>
+                    <li>Choose a scenario below (daily life, travel, shopping, or work)</li>
+                    <li>Select your speaking speed</li>
+                    <li>Press "Start" - sentences will appear one at a time</li>
+                    <li>Read the English sentence aloud</li>
+                    <li>Immediately interpret it into your native language</li>
+                    <li>The next sentence will appear automatically</li>
+                    <li>Try to maintain fluency and accuracy!</li>
+                </ol>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Select a Scenario:</h3>
+            <div class="scenario-list">
+                <div class="scenario-card selected" onclick="selectScenario1(0)">
+                    <div class="scenario-title">🏠 Daily Life & Routines</div>
+                    <div class="scenario-description">Common everyday activities and habits</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario1(1)">
+                    <div class="scenario-title">✈️ Travel & Tourism</div>
+                    <div class="scenario-description">Airport, hotel, and sightseeing situations</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario1(2)">
+                    <div class="scenario-title">🛒 Shopping & Services</div>
+                    <div class="scenario-description">Stores, restaurants, and customer service</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario1(3)">
+                    <div class="scenario-title">💼 Work & Office</div>
+                    <div class="scenario-description">Meetings, emails, and workplace conversations</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="control-btn" onclick="startActivity1()" id="startBtn1">
+                    ▶️ Start Practice
+                </button>
+                <button class="control-btn stop" onclick="stopActivity1()" id="stopBtn1" disabled>
+                    ⏹️ Stop
+                </button>
+                <button class="control-btn" onclick="resetActivity1()" id="resetBtn1">
+                    🔄 Reset
+                </button>
+                <div class="speed-control">
+                    <label>Speed:</label>
+                    <select id="speed1">
+                        <option value="slow">Slow (5s pause)</option>
+                        <option value="medium" selected>Medium (3s pause)</option>
+                        <option value="fast">Fast (2s pause)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="status" id="status1">Ready to start. Select a scenario and press Start!</div>
+            <div class="timer" id="timer1">00:00</div>
+
+            <div class="display-area">
+                <div class="sentence-display" id="sentenceDisplay1">
+                    Your sentences will appear here...
+                </div>
+            </div>
+
+            <div class="tips">
+                <h3>💡 Interpreting Tips:</h3>
+                <ul>
+                    <li><strong>Listen carefully</strong> - Focus on understanding the full meaning</li>
+                    <li><strong>Don't translate word-by-word</strong> - Convey the message naturally</li>
+                    <li><strong>Use simple vocabulary</strong> - Don't overcomplicate your interpretation</li>
+                    <li><strong>Maintain the tone</strong> - Keep the same level of formality</li>
+                    <li><strong>Practice regularly</strong> - Start slow, then increase speed</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Activity 2: Dialogue Interpreting -->
+        <div id="activity2" class="activity-container">
+            <h2 class="activity-title">Activity 2: Dialogue Interpreting</h2>
+            <p class="activity-subtitle">Interpret conversations between two people in real-time</p>
+
+            <div class="instructions">
+                <h3>📋 How to Practice:</h3>
+                <ol>
+                    <li>Choose a dialogue scenario below</li>
+                    <li>Select your speaking speed</li>
+                    <li>Press "Start" - the dialogue will play automatically</li>
+                    <li>Person A speaks (blue) - interpret into your language</li>
+                    <li>Person B responds (purple) - interpret their response</li>
+                    <li>Continue interpreting back and forth</li>
+                    <li>Try to keep up with the natural conversation flow!</li>
+                </ol>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">Select a Dialogue:</h3>
+            <div class="scenario-list">
+                <div class="scenario-card selected" onclick="selectScenario2(0)">
+                    <div class="scenario-title">🏨 Hotel Check-in</div>
+                    <div class="scenario-description">Guest checking into a hotel</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario2(1)">
+                    <div class="scenario-title">🍽️ Restaurant Order</div>
+                    <div class="scenario-description">Customer ordering food at a restaurant</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario2(2)">
+                    <div class="scenario-title">🏥 Doctor's Appointment</div>
+                    <div class="scenario-description">Patient talking to a doctor</div>
+                </div>
+                <div class="scenario-card" onclick="selectScenario2(3)">
+                    <div class="scenario-title">👔 Job Interview</div>
+                    <div class="scenario-description">Candidate being interviewed for a position</div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <button class="control-btn" onclick="startActivity2()" id="startBtn2">
+                    ▶️ Start Dialogue
+                </button>
+                <button class="control-btn stop" onclick="stopActivity2()" id="stopBtn2" disabled>
+                    ⏹️ Stop
+                </button>
+                <button class="control-btn" onclick="resetActivity2()" id="resetBtn2">
+                    🔄 Reset
+                </button>
+                <div class="speed-control">
+                    <label>Speed:</label>
+                    <select id="speed2">
+                        <option value="slow">Slow (6s pause)</option>
+                        <option value="medium" selected>Medium (4s pause)</option>
+                        <option value="fast">Fast (3s pause)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="status" id="status2">Ready to start. Select a dialogue and press Start!</div>
+            <div class="timer" id="timer2">00:00</div>
+
+            <div class="display-area">
+                <div class="dialogue-container" id="dialogueDisplay2">
+                    <div style="text-align: center; color: #999; padding: 50px;">
+                        Your dialogue will appear here...
+                    </div>
+                </div>
+            </div>
+
+            <div class="tips">
+                <h3>💡 Dialogue Interpreting Tips:</h3>
+                <ul>
+                    <li><strong>Stay neutral</strong> - You're a bridge, not a participant</li>
+                    <li><strong>Use first person</strong> - Say "I need a room" not "He says he needs a room"</li>
+                    <li><strong>Remember context</strong> - Previous exchanges help you interpret</li>
+                    <li><strong>Ask for clarification</strong> - In real life, you can ask speakers to repeat</li>
+                    <li><strong>Stay calm</strong> - If you miss something, keep going and catch up</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Activity 1 Data
+        const scenarios1 = [
+            {
+                name: "Daily Life & Routines",
+                sentences: [
+                    "I usually wake up at seven o'clock in the morning.",
+                    "After breakfast, I brush my teeth and get dressed.",
+                    "My commute to work takes about thirty minutes by bus.",
+                    "I have lunch with my colleagues at noon.",
+                    "In the evening, I like to watch TV or read a book.",
+                    "I go to bed around eleven o'clock on weekdays.",
+                    "On weekends, I sleep in and relax at home.",
+                    "I do my grocery shopping every Saturday morning.",
+                    "I try to exercise at least three times a week.",
+                    "My family usually has dinner together at seven."
+                ]
+            },
+            {
+                name: "Travel & Tourism",
+                sentences: [
+                    "Excuse me, where is the nearest subway station?",
+                    "I'd like to book a double room for three nights, please.",
+                    "What time does the museum open tomorrow?",
+                    "Can you recommend a good restaurant near here?",
+                    "How much does a ticket to the city center cost?",
+                    "Is there a tour guide who speaks English?",
+                    "I need to change some money. Where's the bank?",
+                    "Could you call a taxi for me, please?",
+                    "What time is check-out at this hotel?",
+                    "Are there any famous landmarks I should visit?"
+                ]
+            },
+            {
+                name: "Shopping & Services",
+                sentences: [
+                    "How much does this jacket cost?",
+                    "Do you have this shirt in a larger size?",
+                    "Can I try this on before I buy it?",
+                    "I'd like to return this item, please.",
+                    "Do you accept credit cards?",
+                    "Is there a discount if I buy two?",
+                    "Could you gift-wrap this for me?",
+                    "Where can I find the electronics section?",
+                    "I'm looking for a birthday present for my friend.",
+                    "What time do you close this evening?"
+                ]
+            },
+            {
+                name: "Work & Office",
+                sentences: [
+                    "We have a meeting scheduled for Monday morning at ten.",
+                    "Could you send me the report by the end of the day?",
+                    "I need to take a day off next week for a doctor's appointment.",
+                    "Let's discuss this project during our lunch break.",
+                    "Can you help me prepare the presentation?",
+                    "I'll be working from home tomorrow.",
+                    "We need to finish this by Friday afternoon.",
+                    "Could you forward that email to me?",
+                    "I have a conference call at three o'clock.",
+                    "Let's schedule a team meeting for next Tuesday."
+                ]
+            }
+        ];
+
+        // Activity 2 Data
+        const dialogues2 = [
+            {
+                name: "Hotel Check-in",
+                conversation: [
+                    { speaker: "Guest", text: "Hello, I have a reservation under the name Smith." },
+                    { speaker: "Receptionist", text: "Good evening, Mr. Smith. Let me check that for you." },
+                    { speaker: "Receptionist", text: "Yes, I have your reservation for three nights. Is that correct?" },
+                    { speaker: "Guest", text: "Yes, that's right. I'm checking out on Friday morning." },
+                    { speaker: "Receptionist", text: "Perfect. Can I see your passport and a credit card, please?" },
+                    { speaker: "Guest", text: "Here you are. Does the room have wifi?" },
+                    { speaker: "Receptionist", text: "Yes, all our rooms have free wifi. The password is on your key card." },
+                    { speaker: "Guest", text: "Great. What time is breakfast served?" },
+                    { speaker: "Receptionist", text: "Breakfast is from seven to ten in the restaurant on the ground floor." },
+                    { speaker: "Guest", text: "Thank you. Which floor is my room on?" }
+                ]
+            },
+            {
+                name: "Restaurant Order",
+                conversation: [
+                    { speaker: "Waiter", text: "Good evening. Are you ready to order?" },
+                    { speaker: "Customer", text: "Yes, I'd like to start with the soup, please." },
+                    { speaker: "Waiter", text: "Excellent choice. And for your main course?" },
+                    { speaker: "Customer", text: "I'll have the grilled chicken with vegetables." },
+                    { speaker: "Waiter", text: "How would you like your chicken cooked?" },
+                    { speaker: "Customer", text: "Well done, please. And can I have a side salad instead of fries?" },
+                    { speaker: "Waiter", text: "Of course, no problem. Anything to drink?" },
+                    { speaker: "Customer", text: "Just water for now, thank you." },
+                    { speaker: "Waiter", text: "Perfect. Your order will be ready in about twenty minutes." },
+                    { speaker: "Customer", text: "That sounds good. Thank you very much." }
+                ]
+            },
+            {
+                name: "Doctor's Appointment",
+                conversation: [
+                    { speaker: "Doctor", text: "Good morning. What brings you here today?" },
+                    { speaker: "Patient", text: "I've had a bad headache for three days now." },
+                    { speaker: "Doctor", text: "I see. Do you have any other symptoms?" },
+                    { speaker: "Patient", text: "Yes, I also feel tired and a bit dizzy sometimes." },
+                    { speaker: "Doctor", text: "Have you been getting enough sleep lately?" },
+                    { speaker: "Patient", text: "Not really. I've been working late every night." },
+                    { speaker: "Doctor", text: "That could be the problem. You need more rest." },
+                    { speaker: "Patient", text: "Should I take any medicine?" },
+                    { speaker: "Doctor", text: "I'll prescribe something for the pain. Take it twice a day." },
+                    { speaker: "Patient", text: "Thank you, doctor. I'll try to rest more." }
+                ]
+            },
+            {
+                name: "Job Interview",
+                conversation: [
+                    { speaker: "Interviewer", text: "Thank you for coming. Tell me about yourself." },
+                    { speaker: "Candidate", text: "I graduated two years ago and I've been working in marketing since then." },
+                    { speaker: "Interviewer", text: "What interests you about this position?" },
+                    { speaker: "Candidate", text: "I'm excited about the opportunity to work with international clients." },
+                    { speaker: "Interviewer", text: "Do you have experience with social media marketing?" },
+                    { speaker: "Candidate", text: "Yes, I managed social media campaigns at my previous job." },
+                    { speaker: "Interviewer", text: "Can you work well under pressure?" },
+                    { speaker: "Candidate", text: "Absolutely. I actually perform better when I have deadlines." },
+                    { speaker: "Interviewer", text: "When would you be able to start?" },
+                    { speaker: "Candidate", text: "I can start in two weeks if that works for you." }
+                ]
+            }
+        ];
+
+        // Activity 1 Variables
+        let selectedScenario1 = 0;
+        let currentSentence1 = 0;
+        let isRunning1 = false;
+        let interval1 = null;
+        let timerInterval1 = null;
+        let startTime1 = 0;
+
+        // Activity 2 Variables
+        let selectedScenario2 = 0;
+        let currentTurn2 = 0;
+        let isRunning2 = false;
+        let interval2 = null;
+        let timerInterval2 = null;
+        let startTime2 = 0;
+
+        function showActivity(num) {
+            // Update button states
+            const buttons = document.querySelectorAll('.activity-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === num - 1) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Show/hide activities
+            document.getElementById('activity1').classList.toggle('active', num === 1);
+            document.getElementById('activity2').classList.toggle('active', num === 2);
+
+            // Stop any running activity
+            stopActivity1();
+            stopActivity2();
+        }
+
+        function selectScenario1(index) {
+            selectedScenario1 = index;
+            const cards = document.querySelectorAll('#activity1 .scenario-card');
+            cards.forEach((card, idx) => {
+                card.classList.toggle('selected', idx === index);
+            });
+            resetActivity1();
+        }
+
+        function selectScenario2(index) {
+            selectedScenario2 = index;
+            const cards = document.querySelectorAll('#activity2 .scenario-card');
+            cards.forEach((card, idx) => {
+                card.classList.toggle('selected', idx === index);
+            });
+            resetActivity2();
+        }
+
+        function getPauseTime(speedSelect) {
+            const speed = document.getElementById(speedSelect).value;
+            if (speed === 'slow') return speedSelect === 'speed1' ? 5000 : 6000;
+            if (speed === 'fast') return speedSelect === 'speed1' ? 2000 : 3000;
+            return speedSelect === 'speed1' ? 3000 : 4000; // medium
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        // Activity 1 Functions
+        function startActivity1() {
+            if (isRunning1) return;
+            
+            isRunning1 = true;
+            document.getElementById('startBtn1').disabled = true;
+            document.getElementById('stopBtn1').disabled = false;
+            document.getElementById('status1').textContent = 'Interpreting in progress...';
+            document.getElementById('status1').classList.add('recording');
+            
+            startTime1 = Date.now();
+            timerInterval1 = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime1) / 1000);
+                document.getElementById('timer1').textContent = formatTime(elapsed);
+            }, 1000);
+            
+            showNextSentence1();
+        }
+
+        function showNextSentence1() {
+            if (!isRunning1) return;
+            
+            const scenario = scenarios1[selectedScenario1];
+            if (currentSentence1 >= scenario.sentences.length) {
+                stopActivity1();
+                document.getElementById('sentenceDisplay1').innerHTML = 
+                    '<div style="color: #4CAF50; font-size: 1.8em;">🎉 Great job! You completed all sentences!</div>';
+                return;
+            }
+            
+            const display = document.getElementById('sentenceDisplay1');
+            display.textContent = scenario.sentences[currentSentence1];
+            display.classList.add('highlight');
+            setTimeout(() => display.classList.remove('highlight'), 500);
+            
+            currentSentence1++;
+            
+            interval1 = setTimeout(() => {
+                showNextSentence1();
+            }, getPauseTime('speed1'));
+        }
+
+        function stopActivity1() {
+            isRunning1 = false;
+            if (interval1) clearTimeout(interval1);
+            if (timerInterval1) clearInterval(timerInterval1);
+            
+            document.getElementById('startBtn1').disabled = false;
+            document.getElementById('stopBtn1').disabled = true;
+            document.getElementById('status1').textContent = 'Stopped';
+            document.getElementById('status1').classList.remove('recording');
+        }
+
+        function resetActivity1() {
+            stopActivity1();
+            currentSentence1 = 0;
+            document.getElementById('sentenceDisplay1').textContent = 'Your sentences will appear here...';
+            document.getElementById('status1').textContent = 'Ready to start. Select a scenario and press Start!';
+            document.getElementById('timer1').textContent = '00:00';
+        }
+
+        // Activity 2 Functions
+        function startActivity2() {
+            if (isRunning2) return;
+            
+            isRunning2 = true;
+            document.getElementById('startBtn2').disabled = true;
+            document.getElementById('stopBtn2').disabled = false;
+            document.getElementById('status2').textContent = 'Interpreting dialogue...';
+            document.getElementById('status2').classList.add('recording');
+            
+            document.getElementById('dialogueDisplay2').innerHTML = '';
+            
+            startTime2 = Date.now();
+            timerInterval2 = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime2) / 1000);
+                document.getElementById('timer2').textContent = formatTime(elapsed);
+            }, 1000);
+            
+            showNextTurn2();
+        }
+
+        function showNextTurn2() {
+            if (!isRunning2) return;
+            
+            const dialogue = dialogues2[selectedScenario2];
+            if (currentTurn2 >= dialogue.conversation.length) {
+                stopActivity2();
+                const display = document.getElementById('dialogueDisplay2');
+                const successMsg = document.createElement('div');
+                successMsg.style.cssText = 'text-align: center; color: #4CAF50; font-size: 1.5em; padding: 30px;';
+                successMsg.innerHTML = '🎉 Excellent! You completed the entire dialogue!';
+                display.appendChild(successMsg);
+                return;
+            }
+            
+            const turn = dialogue.conversation[currentTurn2];
+            const display = document.getElementById('dialogueDisplay2');
+            
+            const turnDiv = document.createElement('div');
+            turnDiv.className = `dialogue-turn ${turn.speaker.toLowerCase().includes('guest') || turn.speaker.toLowerCase().includes('customer') || turn.speaker.toLowerCase().includes('patient') || turn.speaker.toLowerCase().includes('candidate') ? 'person-a' : 'person-b'}`;
+            
+            const label = document.createElement('div');
+            label.className = 'speaker-label';
+            label.textContent = turn.speaker + ':';
+            
+            const text = document.createElement('div');
+            text.textContent = turn.text;
+            
+            turnDiv.appendChild(label);
+            turnDiv.appendChild(text);
+            display.appendChild(turnDiv);
+            
+            // Scroll to bottom
+            display.scrollTop = display.scrollHeight;
+            
+            currentTurn2++;
+            
+            // Add pause indicator
+            if (currentTurn2 < dialogue.conversation.length) {
+                const pause = document.createElement('div');
+                pause.className = 'pause-indicator';
+                pause.textContent = '⏸️ Interpret now...';
+                display.appendChild(pause);
+            }
+            
+            interval2 = setTimeout(() => {
+                // Remove pause indicator
+                const pauses = display.querySelectorAll('.pause-indicator');
+                if (pauses.length > 0) {
+                    pauses[pauses.length - 1].remove();
+                }
+                showNextTurn2();
+            }, getPauseTime('speed2'));
+        }
+
+        function stopActivity2() {
+            isRunning2 = false;
+            if (interval2) clearTimeout(interval2);
+            if (timerInterval2) clearInterval(timerInterval2);
+            
+            document.getElementById('startBtn2').disabled = false;
+            document.getElementById('stopBtn2').disabled = true;
+            document.getElementById('status2').textContent = 'Stopped';
+            document.getElementById('status2').classList.remove('recording');
+        }
+
+        function resetActivity2() {
+            stopActivity2();
+            currentTurn2 = 0;
+            document.getElementById('dialogueDisplay2').innerHTML = 
+                '<div style="text-align: center; color: #999; padding: 50px;">Your dialogue will appear here...</div>';
+            document.getElementById('status2').textContent = 'Ready to start. Select a dialogue and press Start!';
+            document.getElementById('timer2').textContent = '00:00';
+        }
+    </script>
+</body>
+</html>
+                
